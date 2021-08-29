@@ -1,0 +1,119 @@
+CREATE TABLE Model (
+    M_name VARCHAR(30) NOT NULL,
+    brand VARCHAR(30) NOT NULL,
+    PRIMARY KEY (M_name)
+);
+
+CREATE TABLE Model_spec (
+    M_ID NUMERIC(8 , 0 ) NOT NULL,
+    M_name VARCHAR(30) NOT NULL,
+    body_style VARCHAR(20) CHECK (body_style IN ('default' , '4-door', 'wagon')),
+    price NUMERIC(10 , 0 ) CHECK (price >= 0),
+    FOREIGN KEY (M_name)
+        REFERENCES Model (M_name),
+    PRIMARY KEY (M_ID)
+);
+
+CREATE TABLE Colors (
+    O_ID NUMERIC(8 , 0 ) NOT NULL,
+    M_ID NUMERIC(8 , 0 ) NOT NULL,
+    color VARCHAR(20) NOT NULL,
+    add_price NUMERIC(10 , 0 ) NOT NULL,
+    FOREIGN KEY (M_ID)
+        REFERENCES Model_spec (M_ID),
+    PRIMARY KEY (O_ID)
+);
+
+CREATE TABLE Factory (
+    F_ID NUMERIC(8 , 0 ) NOT NULL,
+    F_name VARCHAR(20),
+    F_location VARCHAR(20),
+    F_type VARCHAR(15) CHECK (F_type IN ('assemble' , 'manufacture')),
+    PRIMARY KEY (F_ID)
+);
+
+CREATE TABLE Supplier (
+    S_ID NUMERIC(8 , 0 ) NOT NULL,
+    F_ID NUMERIC(8 , 0 ),
+    S_name VARCHAR(20),
+    S_type VARCHAR(15) CHECK (S_type IN ('company' , 'third-party')),
+    company_name VARCHAR(20),
+    FOREIGN KEY (F_ID)
+        REFERENCES Factory (F_ID)
+        ON DELETE SET NULL,
+    PRIMARY KEY (S_ID)
+);
+
+CREATE TABLE Part (
+    P_ID NUMERIC(8 , 0 ) NOT NULL,
+    P_name VARCHAR(20),
+    S_ID NUMERIC(8 , 0 ) NOT NULL,
+    prod_date DATE NOT NULL,
+    supp_date DATE NOT NULL,
+    FOREIGN KEY (S_ID)
+        REFERENCES Supplier (S_ID),
+    PRIMARY KEY (P_ID)
+);
+
+CREATE TABLE Customer (
+    C_ID NUMERIC(8 , 0 ) NOT NULL,
+    C_name VARCHAR(20),
+    C_type VARCHAR(10) CHECK (C_type IN ('individual' , 'business')),
+    city VARCHAR(20),
+    street VARCHAR(20),
+    gender VARCHAR(20),
+    birthdate DATE,
+    phone_number VARCHAR(20),
+    income_range NUMERIC(10 , 0 ),
+    PRIMARY KEY (C_ID)
+);
+
+CREATE TABLE Dealer (
+    D_ID NUMERIC(8 , 0 ) NOT NULL,
+    D_name VARCHAR(20),
+    D_status VARCHAR(10) CHECK (D_status IN ('open' , 'closed')),
+    PRIMARY KEY (D_ID)
+);
+
+CREATE TABLE Vehicle (
+    VIN NUMERIC(10 , 0 ) NOT NULL,
+    F_ID NUMERIC(8 , 0 ) NOT NULL,
+    M_ID NUMERIC(8 , 0 ) NOT NULL,
+    C_ID NUMERIC(8 , 0 ),
+    D_ID NUMERIC(8 , 0 ),
+    O_ID NUMERIC(8 , 0 ),
+    mf_date DATE NOT NULL,
+    ts_date DATE,
+    FOREIGN KEY (F_ID)
+        REFERENCES Factory (F_ID),
+    FOREIGN KEY (M_ID)
+        REFERENCES Model_spec (M_ID),
+    FOREIGN KEY (C_ID)
+        REFERENCES Customer (C_ID),
+    FOREIGN KEY (D_ID)
+        REFERENCES Dealer (D_ID),
+    FOREIGN KEY (O_ID)
+        REFERENCES Colors (O_ID),
+    PRIMARY KEY (VIN)
+);
+
+CREATE TABLE Mf_Mod (
+    F_ID NUMERIC(8 , 0 ) NOT NULL,
+    M_ID NUMERIC(8 , 0 ) NOT NULL,
+    FOREIGN KEY (F_ID)
+        REFERENCES Factory (F_ID),
+    FOREIGN KEY (M_ID)
+        REFERENCES Model_spec (M_ID),
+    PRIMARY KEY (F_ID , M_ID)
+);
+
+CREATE TABLE Mf_His (
+    VIN NUMERIC(10 , 0 ) NOT NULL,
+    P_ID NUMERIC(8 , 0 ) NOT NULL,
+    FOREIGN KEY (VIN)
+        REFERENCES Vehicle (VIN),
+    FOREIGN KEY (P_ID)
+        REFERENCES Part (P_ID),
+    PRIMARY KEY (VIN , P_ID)
+);
+

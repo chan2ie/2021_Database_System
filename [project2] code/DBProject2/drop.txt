@@ -1,0 +1,15 @@
+SET foreign_key_checks = 0;
+
+drop table dealer;
+drop table supplier;
+drop table model_spec;
+drop table model;
+drop table part;
+drop table factory;
+drop table colors;
+drop table customer;
+drop table vehicle;
+drop table Mf_Mod;
+drop table Mf_His;
+
+SET foreign_key_checks = 1;
